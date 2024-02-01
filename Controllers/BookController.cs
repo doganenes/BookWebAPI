@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BookWebApi.Models.Entities;
+using BookWebApi.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookWebApi.Controllers
@@ -7,10 +9,15 @@ namespace BookWebApi.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Index()
+        BaseDbContext context = new BaseDbContext();
+        
+        [HttpPost("add")]
+        public IActionResult Add([FromBody]Book book)
         {
-            return Ok("Successful");
+            context.Books.Add(book);
+            context.SaveChanges();
+
+            return Ok("Added book successfully.");
         }
     }
 }
