@@ -26,7 +26,7 @@ namespace BookWebApi.Controllers
         [HttpPost("add")]
         public IActionResult Add([FromBody]BookAddRequestDto dto)
         {
-            Book book = _mapper.Map<Book>(dto); 
+            Book book = dto;
             _context.Books.Add(book);
             _context.SaveChanges();
 
@@ -69,12 +69,8 @@ namespace BookWebApi.Controllers
             {
                 return NotFound();   
             }
-            book.Title = dto.Title;
-            book.CategoryName = dto.CategoryName;
-            book.AuthorName = dto.AuthorName;
-            book.Description = dto.Description;
-            book.Price = dto.Price;
-            book.StockAmount = dto.StockAmount;
+
+            book = dto;
 
             _context.SaveChanges();
             return Ok(book);
