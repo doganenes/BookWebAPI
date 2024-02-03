@@ -11,6 +11,13 @@ namespace BookWebApi.Services.Concrete
     {
         private readonly BaseDbContext _context;
         private readonly IMapper _mapper;
+
+        public AuthorService(BaseDbContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
+
         public void Add(AuthorAddRequestDto dto)
         {
             Author author = _mapper.Map<Author>(dto);
@@ -34,7 +41,5 @@ namespace BookWebApi.Services.Concrete
             }
             return author;
         }
-
-        
     }
 }

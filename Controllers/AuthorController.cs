@@ -32,10 +32,18 @@ namespace BookWebApi.Controllers
         }
 
         [HttpGet("getbyid")]
-        public IActionResult Get([FromBody] int id)
+        public IActionResult GetById([FromQuery] int id)
         {
-            Author author = _service.GetById(id);
-            return Ok(author);
+            try
+            {
+                Author author = _service.GetById(id);
+                return Ok(author);
+            }
+
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
         
     }

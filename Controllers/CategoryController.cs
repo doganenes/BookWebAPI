@@ -27,9 +27,16 @@ namespace BookWebApi.Controllers
         }
 
         [HttpGet("getbyid")]
-        public IActionResult GetById([FromQuery]int id) { 
-            Category category = _service.GetById(id);
-            return Ok(category);
+        public IActionResult GetById([FromQuery]int id) {
+            try
+            {
+                Category category = _service.GetById(id);
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpPost("add")]

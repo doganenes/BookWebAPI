@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using BookWebApi.Models.Dtos.RequestDto;
-    using BookWebApi.Models.Entities;
-    using BookWebApi.Repositories;
+using BookWebApi.Models.Dtos.ResponseDto;
+using BookWebApi.Models.Entities;
+using BookWebApi.Repositories;
 using BookWebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
     namespace BookWebApi.Controllers
-    {
+    {   
         [Route("api/[controller]")]
         [ApiController]
         public class BookController : ControllerBase
@@ -26,18 +27,33 @@ using Microsoft.AspNetCore.Http;
             return Ok(books);
         }
 
-        [HttpGet]
+        [HttpGet("getbyid")]
         public IActionResult GetById([FromQuery]int id)
         {
-            Book book = _service.GetById(id);
-            return Ok(book);
+            try
+            {
+                Book book = _service.GetById(id);
+                return Ok(book);
+            }
+
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
-        [HttpPost("update")]
+        [HttpPut("update")]
         public IActionResult Update([FromBody]BookUpdateRequestDto dto)
         {
-            _service.Update(dto);
-            return Ok("Updated successfully!");
+            try
+            {
+                _service.Update(dto);
+                return Ok("Updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpPost("add")]
@@ -47,11 +63,67 @@ using Microsoft.AspNetCore.Http;
             return Ok("Added successfully!");
         }
 
-        [HttpPost]
+        [HttpDelete("delete")]
         public IActionResult Delete([FromQuery]int id)
         {
-            _service.Delete(id);
-            return Ok("Deleted successfully!");
+            try
+            {
+                _service.Delete(id);
+                return Ok("Deleted successfully!");
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("getalldetails")]
+        public IActionResult GetAllDetails()
+        {
+            List<BookResponseDto> results =  _service.GetAllDetails();
+            return Ok(results);
+        }
+
+        [HttpGet("getdetailsbyid")]
+        public IActionResult GetDetailsById([FromQuery]int id)
+        {
+            try
+            {
+                BookResponseDto result = _service.GetDetailsById(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("getbycategoryid")]
+        public IActionResult GetByCategoryId([FromQuery]int categoryId)
+        {
+            List<BookResponseDto> response = _service.GetByCategoryId(categoryId);
+            return Ok(response);
+        }
+
+        [HttpGet("getbyauthorid")]
+        public IActionResult GetByAuthorId([FromQuery]int AuthorId)
+        {
+            List<BookResponseDto> response = _service.GetByAuthorId(AuthorId);
+            return Ok(response);
+        }
+
+        [HttpGet("getbypricerange")]
+        public IActionResult GetByPriceRangeDetails([FromQuery]double min, [FromQuery] double max)
+        {
+            List<BookResponseDto> responses = _service.GetByPriceRangeDetails(min, max);
+            return Ok(responses);
+        }
+
+        [HttpGet("getbytitlecontains")]
+        public IActionResult GetByTitleContains([FromQuery]string title)
+        {
+            List<BookResponseDto> responses = _service.GetByTitleContains(title);
+            return Ok(responses);
         }
     }
 }
