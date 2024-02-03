@@ -9,6 +9,9 @@ namespace BookWebApi.MappingProfiles
         public MappingProfile()
         {
             CreateMap<BookAddRequestDto, Book>();
+            CreateMap<BookUpdateRequestDto, Book>();
+            CreateMap<AuthorAddRequestDto, Author>();
+            CreateMap<CategoryAddRequestDto,Category>();
         }
     }
 }
