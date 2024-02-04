@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BookWebApi.Exceptions;
 using BookWebApi.Models.Dtos.RequestDto;
 using BookWebApi.Models.Dtos.ResponseDto;
 using BookWebApi.Models.Entities;
@@ -9,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BookWebApi.Services.Concrete;
-
 public class BookService : IBookService
 {
     private readonly BaseDbContext _context;
@@ -23,6 +23,14 @@ public class BookService : IBookService
 
     public void Add(BookAddRequestDto dto)
     {
+
+        bool bookIsPresent = _context.Books.Any(x =>x.Title == dto.Title);
+
+        if(bookIsPresent)
+        {
+            throw new BusinessException($"The book has {dto.Title} is already registered!");
+        }
+
         Book book = _mapper.Map<Book>(dto);
         _context.Books.Add(book);
         _context.SaveChanges(); 
@@ -30,11 +38,8 @@ public class BookService : IBookService
 
     public void Delete(int id)
     {
+        BookIsPresent(id);
         Book? book = _context.Books.Find(id);
-        if(book != null)
-        {
-            throw new Exception($"Book with id: {id} was not found!");
-        }
         _context.Books.Remove(book);
     }
 
@@ -72,11 +77,8 @@ public class BookService : IBookService
 
     public Book GetById(int id)
     {
+        BookIsPresent(id);
         Book? book = _context.Books.Find(id);
-        if( book == null )
-        {
-            throw new Exception($"Book with id: {id} was not found!");
-        }
         return book;
     }
 
@@ -100,13 +102,10 @@ public class BookService : IBookService
 
     public BookResponseDto GetDetailsById(int id)
     {
+
+        BookIsPresent(id);
         Book? book = _context.Books.Include(x=>x.Author).Include(x=>x.Category).SingleOrDefault(x=>x.Id == id);
 
-        if(book == null)
-        {
-            throw new Exception($"Id : {id} book not found!");
-        }
-            
         BookResponseDto response = _mapper.Map<BookResponseDto>(book);
         return response;
 
@@ -114,13 +113,20 @@ public class BookService : IBookService
 
     public void Update(BookUpdateRequestDto dto)
     {
-        Book? book = _context.Books.Find(dto.Id);
-        if( book != null )
-        {
-            throw new Exception($"Book with id: {dto.Id} was not found!");
-        }
+        BookIsPresent(dto.Id); 
+       
         Book updatedBook = _mapper.Map<Book>(dto);  
         _context.Books.Update(updatedBook);
         _context.SaveChanges();
+    }
+
+    private void BookIsPresent(int id)
+    {
+        var book = _context.Books.Any(x => x.Id == id);
+
+        if(book == false)
+        {
+            throw new NotFoundException($"id : {id} book not found!");
+        }
     }
 }
