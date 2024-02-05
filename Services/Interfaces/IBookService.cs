@@ -1,12 +1,13 @@
 ﻿using BookWebApi.Models.Dtos.RequestDto;
 using BookWebApi.Models.Dtos.ResponseDto;
 using BookWebApi.Models.Entities;
+using BookWebApi.ReturnModels;
 
 namespace BookWebApi.Services.Interfaces;
 
 public interface IBookService
 {
-    List<Book> GetAll();
+   ReturnModel<List<Book>> GetAll();
     Book GetById(int id);
     void Update(BookUpdateRequestDto dto);
     void Add(BookAddRequestDto dto);

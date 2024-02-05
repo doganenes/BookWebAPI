@@ -23,23 +23,15 @@ using Microsoft.AspNetCore.Mvc;
         [HttpGet]
         public IActionResult GetAll()
         {
-          List<Book> books = _service.GetAll();
-            return Ok(books);
+            var responses = _service.GetAll();
+            return Ok(responses);
         }
 
         [HttpGet("getbyid")]
         public IActionResult GetById([FromQuery]int id)
         {
-            try
-            {
-                Book book = _service.GetById(id);
-                return Ok(book);
-            }
-
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+            var res = _service.GetById(id);
+            return Ok(res);
         }
 
         [HttpPut("update")]

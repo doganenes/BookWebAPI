@@ -4,9 +4,11 @@ using BookWebApi.Models.Dtos.RequestDto;
 using BookWebApi.Models.Dtos.ResponseDto;
 using BookWebApi.Models.Entities;
 using BookWebApi.Repositories;
+using BookWebApi.ReturnModels;
 using BookWebApi.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BookWebApi.Services.Concrete;
@@ -25,11 +27,7 @@ public class BookService : IBookService
     {
 
         bool bookIsPresent = _context.Books.Any(x =>x.Title == dto.Title);
-
-        if(bookIsPresent)
-        {
-            throw new BusinessException($"The book has {dto.Title} is already registered!");
-        }
+        BookTitleUnique(dto.Title);
 
         Book book = _mapper.Map<Book>(dto);
         _context.Books.Add(book);
@@ -43,10 +41,16 @@ public class BookService : IBookService
         _context.Books.Remove(book);
     }
 
-    public List<Book> GetAll()
+    public ReturnModel<List<Book>> GetAll()
     {
         List<Book>books = _context.Books.ToList();
-        return books;
+        return new ReturnModel<List<Book>>()
+        {
+            Data = books,
+            Message = "Books are listed!",
+            Success = true,
+            StatusCode = HttpStatusCode.OK
+        };
     }
 
     public List<BookResponseDto> GetAllDetails()
@@ -75,11 +79,17 @@ public class BookService : IBookService
 
     }
 
-    public Book GetById(int id)
+    public ReturnModel<Book> GetById(int id)
     {
         BookIsPresent(id);
         Book? book = _context.Books.Find(id);
-        return book;
+        return new ReturnModel<Book>()
+        {
+            Data = book,
+            Message = $"The book has id : {id} are getting",
+            Success = true,
+            StatusCode = HttpStatusCode.OK,
+        };
     }
 
     public List<BookResponseDto> GetByPriceRangeDetails(double min, double max)
@@ -128,5 +138,18 @@ public class BookService : IBookService
         {
             throw new NotFoundException($"id : {id} book not found!");
         }
+    }
+
+    private void BookTitleUnique(string title)
+    {
+
+        bool bookIsPresent = _context.Books.Any(x => x.Title == title);
+
+        if (bookIsPresent)
+        {
+            throw new BusinessException($"The book has {title} is already registered!");
+        }
+
+
     }
 }
