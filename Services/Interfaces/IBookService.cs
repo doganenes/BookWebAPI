@@ -7,16 +7,16 @@ namespace BookWebApi.Services.Interfaces;
 
 public interface IBookService
 {
-   ReturnModel<List<Book>> GetAll();
-    Book GetById(int id);
-    void Update(BookUpdateRequestDto dto);
-    void Add(BookAddRequestDto dto);
-    void Delete(int id);
-    List<BookResponseDto> GetAllDetails();
+    ReturnModel<List<Book>> GetAll();
+    ReturnModel<Book> GetById(int id);
+    ReturnModel<NoData> Update(BookUpdateRequestDto dto);
+    ReturnModel<NoData> Add(BookAddRequestDto dto);
+    ReturnModel<NoData> Delete(int id);
+    ReturnModel<List<BookResponseDto>> GetAllDetails();
 
-    BookResponseDto GetDetailsById(int id);
-    List<BookResponseDto> GetByCategoryId(int categoryId);
-    List<BookResponseDto> GetByAuthorId(int AuthorId);
-    List<BookResponseDto> GetByPriceRangeDetails(double min,double max);
-    List<BookResponseDto> GetByTitleContains(string title);
+    ReturnModel<BookResponseDto> GetDetailsById(int id);
+    ReturnModel<List<BookResponseDto>> GetByCategoryId(int categoryId);
+    ReturnModel<List<BookResponseDto>> GetByAuthorId(int AuthorId);
+    ReturnModel<List<BookResponseDto>> GetByPriceRangeDetails(double min,double max);
+    ReturnModel<List<BookResponseDto>> GetByTitleContains(string title);
 }
