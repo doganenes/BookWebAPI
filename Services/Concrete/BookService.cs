@@ -126,7 +126,7 @@ public class BookService : IBookService
         {
             return new ReturnModel<List<BookResponseDto>>()
             {
-                Message = "Books not found!",
+                Message = ex.Message,
                 Success = false,
                 StatusCode = HttpStatusCode.NotFound
             };
@@ -152,7 +152,7 @@ public class BookService : IBookService
         {
             return new ReturnModel<List<BookResponseDto>>()
             {
-                Message = $"The book which has author id : {AuthorId} are not found!",
+                Message = ex.Message,
                 Success = false,
                 StatusCode = HttpStatusCode.NotFound
             };
@@ -179,7 +179,7 @@ public class BookService : IBookService
         {
             return new ReturnModel<List<BookResponseDto>>()
             {
-                Message = $"The product has categoryId : {categoryId} was not found!",
+                Message = ex.Message,
                 Success = false,
                 StatusCode = HttpStatusCode.NotFound
             };
