@@ -82,56 +82,108 @@ public class BookService : IBookService
 
     public ReturnModel<List<Book>> GetAll()
     {
-        List<Book>books = _context.Books.ToList();
-        return new ReturnModel<List<Book>>()
+        try
         {
-            Data = books,
-            Message = "Books are listed!",
-            Success = true,
-            StatusCode = HttpStatusCode.OK
-        };
+            List<Book> books = _context.Books.ToList();
+            BookListIsEmpty(books);
+            return new ReturnModel<List<Book>>()
+            {
+                Data = books,
+                Message = "Books are listed!",
+                Success = true,
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (NotFoundException ex)
+        {
+
+            return new ReturnModel<List<Book>>()
+            {
+                Success = false,
+                Message = ex.Message,
+                StatusCode = HttpStatusCode.NotFound
+            };
+        }
     }
 
     public ReturnModel <List<BookResponseDto>> GetAllDetails()
     {
-        List<Book> books = _context.Books.Include(x => x.Author).Include(x=>x.Category).ToList();
-
-        List<BookResponseDto> responses = _mapper.Map<List<BookResponseDto>>(books);
-        return new ReturnModel<List<BookResponseDto>>()
+        try
         {
-            Data = responses,
-            Message = "All details listed!",
-            Success = true,
-            StatusCode= HttpStatusCode.OK
-        };
+            List<Book> books = _context.Books.Include(x => x.Author).Include(x => x.Category).ToList();
+            BookListIsEmpty(books);
+
+            List<BookResponseDto> responses = _mapper.Map<List<BookResponseDto>>(books);
+            return new ReturnModel<List<BookResponseDto>>()
+            {
+                Data = responses,
+                Message = "All details listed!",
+                Success = true,
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (NotFoundException ex)
+        {
+            return new ReturnModel<List<BookResponseDto>>()
+            {
+                Message = "Books not found!",
+                Success = false,
+                StatusCode = HttpStatusCode.NotFound
+            };
+        }
     }
 
     public ReturnModel<List<BookResponseDto>> GetByAuthorId(int AuthorId)
     {
-     List<Book> books = _context.Books.Include(x => x.Author).Include(x => x.Category).Where(x=>x.AuthorId == AuthorId).ToList();
-
-        List<BookResponseDto> responses = _mapper.Map<List<BookResponseDto>>(books);
-        return new ReturnModel<List<BookResponseDto>>()
+        try
         {
-            Data = responses,
-            Message = $"The book has author id : {AuthorId} are listed!",
-            Success = true,
-            StatusCode= HttpStatusCode.OK
-        };
+            List<Book> books = _context.Books.Include(x => x.Author).Include(x => x.Category).Where(x => x.AuthorId == AuthorId).ToList();
+            BookListIsEmpty(books);
+            List<BookResponseDto> responses = _mapper.Map<List<BookResponseDto>>(books);
+            return new ReturnModel<List<BookResponseDto>>()
+            {
+                Data = responses,
+                Message = $"The book has author id : {AuthorId} are listed!",
+                Success = true,
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+        catch (NotFoundException ex)
+        {
+            return new ReturnModel<List<BookResponseDto>>()
+            {
+                Message = $"The book which has author id : {AuthorId} are not found!",
+                Success = false,
+                StatusCode = HttpStatusCode.NotFound
+            };
+        }
     }
 
     public ReturnModel<List<BookResponseDto>> GetByCategoryId(int categoryId)
     {
-        List<Book> books = _context.Books.Include(x => x.Author).Include(x => x.Category).Where(x => x.CategoryId == categoryId).ToList();
-
-        List<BookResponseDto> responses = _mapper.Map<List<BookResponseDto>>(books);
-        return new ReturnModel<List<BookResponseDto>>()
+        try
         {
-            Data = responses,
-            Message = $"The product has categoryId : {categoryId} was getting!",
-            Success = true,
-            StatusCode= HttpStatusCode.OK
-        };
+            List<Book> books = _context.Books.Include(x => x.Author).Include(x => x.Category).Where(x => x.CategoryId == categoryId).ToList();
+            BookListIsEmpty(books);
+            List<BookResponseDto> responses = _mapper.Map<List<BookResponseDto>>(books);
+            return new ReturnModel<List<BookResponseDto>>()
+            {
+                Data = responses,
+                Message = $"The product has categoryId : {categoryId} was getting!",
+                Success = true,
+                StatusCode = HttpStatusCode.OK
+            };
+        }
+
+        catch (NotFoundException ex)
+        {
+            return new ReturnModel<List<BookResponseDto>>()
+            {
+                Message = $"The product has categoryId : {categoryId} was not found!",
+                Success = false,
+                StatusCode = HttpStatusCode.NotFound
+            };
+        }
     }
 
     public ReturnModel<Book> GetById(int id)
@@ -163,28 +215,55 @@ public class BookService : IBookService
     public ReturnModel<List<BookResponseDto>> GetByPriceRangeDetails(double min, double max)
     {
 
-        List<Book> books = _context.Books.Include(x => x.Author).Include(x => x.Category).Where(x => x.Price <=max && x.Price >= min).ToList();
-
-        List<BookResponseDto> responses = _mapper.Map<List<BookResponseDto>>(books);
-        return new ReturnModel<List<BookResponseDto>>()
+        try
         {
-            Data = responses,
-            Message = $"The books are listed which have price range : ({min} - {max})!",
-            Success =true,
-            StatusCode = HttpStatusCode.OK
-        };
+            List<Book> books = _context.Books.Include(x => x.Author).Include(x => x.Category).Where(x => x.Price <= max && x.Price >= min).ToList();
+
+            List<BookResponseDto> responses = _mapper.Map<List<BookResponseDto>>(books);
+            return new ReturnModel<List<BookResponseDto>>()
+            {
+                Data = responses,
+                Message = $"The books are listed which have price range : ({min} - {max})!",
+                Success = true,
+                StatusCode = HttpStatusCode.OK
+            };
+
+        }
+        catch (NotFoundException ex)
+        {
+
+            return new ReturnModel<List<BookResponseDto>>()
+            {
+                Message = ex.Message,
+                Success = false,
+                StatusCode = HttpStatusCode.NotFound,
+            };
+        }
     }
 
     public ReturnModel<List<BookResponseDto>> GetByTitleContains(string title)
     {
-        List<Book> books = _context.Books.Include(x => x.Author).Include(x => x.Category).Where(x => x.Title.Contains(title)).ToList();
-
-        List<BookResponseDto> responses = _mapper.Map<List<BookResponseDto>>(books);
-        return new ReturnModel<List<BookResponseDto>>()
+        try
         {
-            Data = responses,
-            Message = $"The books are listed which have matched title:  {title}"
-        };
+            List<Book> books = _context.Books.Include(x => x.Author).Include(x => x.Category).Where(x => x.Title.Contains(title)).ToList();
+
+            List<BookResponseDto> responses = _mapper.Map<List<BookResponseDto>>(books);
+            return new ReturnModel<List<BookResponseDto>>()
+            {
+                Data = responses,
+                Message = $"The books are listed which have matched title:  {title}"
+            };
+        }
+        catch (NotFoundException ex)
+        {
+
+            return new ReturnModel<List<BookResponseDto>>()
+            {
+                Message = ex.Message,
+                Success = false,
+                StatusCode = HttpStatusCode.NotFound,
+            };
+        }
     }
 
     public ReturnModel<BookResponseDto> GetDetailsById(int id)
@@ -263,5 +342,20 @@ public class BookService : IBookService
             throw new BusinessException($"The book has {title} is already registered!");
         }
 
+    }
+    private void BookListIsEmpty(List<BookResponseDto> list)
+    {
+        if(list == null || list.Count == 0)
+        {
+            throw new NotFoundException("The books were not found!");
+        }
+    }
+
+    private void BookListIsEmpty(List<Book> list)
+    {
+        if (list == null || list.Count == 0)
+        {
+            throw new NotFoundException("The books were not found!");
+        }
     }
 }

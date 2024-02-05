@@ -7,23 +7,10 @@ namespace BookWebApi.Controllers
     {
         public IActionResult ResponseForStatusCode<T>(ReturnModel<T> response)
         {
-            switch (response.StatusCode)
+            return new ObjectResult(response)
             {
-                case System.Net.HttpStatusCode.OK:
-                    return Ok(response);
-                    break;
-                case System.Net.HttpStatusCode.NotFound:
-                    return NotFound(response);
-                    break;
-                case System.Net.HttpStatusCode.BadRequest:
-                    return BadRequest(response);
-                    break;
-                case System.Net.HttpStatusCode.Created:
-                    return Created("/",response);
-                    break;
-                default:
-                    return NoContent();
-            }
+                StatusCode = (int)response.StatusCode,
+            };
         }
     }
 }
